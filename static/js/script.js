@@ -1,16 +1,23 @@
 const ctx = {
     GLYPH_SIZE: 16,
     w: 820,
-    h: 720
+    h: 720,
+    data: {},
 };
 
-function initSVGcanvas(planetsWithCalTemp){
+function initSVGcanvas(){
+    console.log(ctx.data);
 };
+
 
 function loadData(){
-    d3.json("/get-data").then(function(data){
-      console.log(data);
-    }).catch(function(error){console.log(error)});
+    d3.json("/static/data/top_pageviews.json")
+        .then(function(rawdata){
+            // store data as constant
+            ctx.data = rawdata;
+            initSVGcanvas();
+        })
+        .catch(function(error){console.log(error)});
 };
 
 function createViz(){
@@ -19,7 +26,11 @@ function createViz(){
     svgEl.attr("width", ctx.w);
     svgEl.attr("height", ctx.h);
     var rootG = svgEl.append("g").attr("id", "rootG");
+
     // group for background elements (axes, labels)
     rootG.append("g").attr("id", "bkgG");
-    loadData(svgEl);
+    loadData();
+
+
+
 };
