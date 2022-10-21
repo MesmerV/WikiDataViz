@@ -81,6 +81,41 @@ function initMainView(svgEl){
         console.log(name,days)
      
         if(name=="Main_Page" || name=="Special:Search")return;
+
+    // add tooltip, see https://www.d3-graph-gallery.com/graph/interactivity_tooltip.html
+        var Tooltip = d3.select("#main")
+            .append("div")
+            .style("opacity", 0)
+            .attr("class", "tooltip")
+            .style("background-color", "white")
+            .style("border", "solid")
+            .style("border-width", "2px")
+            .style("border-radius", "5px")
+            .style("padding", "5px")
+            .style("position", "absolute")
+          // Three function that change the tooltip when user hover / move / leave a cell
+        var mouseover = function(d) {
+            Tooltip
+            .style("opacity", 1)
+            d3.select(this)
+            .style("stroke", "red")
+            .style("stroke-width", 3)
+        }
+        var mousemove = function(d) {
+            Tooltip
+            // place the name of the line in the tooltip
+            // where the mouse is
+            .html("The exact value of<br>this cell is: " + name)
+            .style("left", (d3.mouse(this)[0]+70) + "px")
+            .style("top", (d3.mouse(this)[1]) + "px")
+        }
+        var mouseleave = function(d) {
+            Tooltip
+            d3.select(this)
+            .style("stroke", "#69b3a2")
+            .style("stroke-width", 1.5)
+        }
+
         //draw simple graph
         svgEl.append("path")
             .datum(days)
@@ -90,8 +125,10 @@ function initMainView(svgEl){
             .attr("d", d3.line()
               .x(function(d) { return timeScale(ctx.timeParser(d.date)) })
               .y(function(d) { return (ctx.graph_h - ctx.viewsScale(d.views)) })
-            );
-
+            )
+            .on("mouseover", mouseover)
+            .on("mousemove", mousemove)
+            .on("mouseleave", mouseleave);
         rootG.selectAll("line")
             .data(days)
             .enter()
