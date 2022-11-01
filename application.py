@@ -15,5 +15,13 @@ def returnData():
         data = json.load(json_file)
         return jsonify(data)
 
+@app.route("/get-aggregated-data")
+def returnAggregatedData(): 
+    with open('static/data/aggregated_views.json') as json_file:
+        data = json.load(json_file)
+        return jsonify(data)
+
+
+
 if __name__ == "__main__":
     app.run(debug=True, port=5500)

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Wikipedia Project</title>
+        <!-- https://d3js.org/ -->
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/ScrollMagic/2.0.7/ScrollMagic.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/ScrollMagic/2.0.7/plugins/debug.addIndicators.min.js"></script>
+        <script type="text/javascript" src="/static/js/treemap.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="/static/css/treemap.css">
+
+    </head>
+
+
+    <body onload="createViz();">
+
+        <div class="spacer s2"></div>
+        <div id="trigger1" class="spacer s0"></div>
+        <div id="pin1">
+            <h1 id="title" style="text-align: center;">The Wikipedia Project</h1>
+            <p id="subtitle"></p>
+            <br>
+            <br>
+        </div>
+        
+
+        <div id="trigger3" class="spacer s0">
+        </div>
+        <h3 id="caption" style="position:absolute; transform:translate(-50%, -50%); top:200%; left:50%">Click on the circle to discover the most popular articles in 2022.</h3>
+        <div id="reveal1">
+        </div>
+        
+
+        <div class="spacer s2"></div>
+    </body>
+
+</html>
