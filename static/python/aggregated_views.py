@@ -18,6 +18,19 @@ def top_pageviews(project, access, year, month, day):
     return data['items'][0]['articles']
 
 
+def thumbnail(article):
+    url = "https://en.wikipedia.org/w/api.php?action=query&titles={article}&prop=pageimages&format=json&pithumbsize=500".format(
+        article=article,
+    )
+    print(url)
+    headers = {'User-Agent': 'CoolBot/0.0 (https://example.org/coolbot/; coolbot@example.org)'}
+    response = requests.get(url, headers=headers)
+    data = response.json()
+    try: 
+        return list(data['query']['pages'].items())[0][1]['thumbnail']['source']
+    except:
+        return ""
+
 def refresh(pageviews, data):
     for article in pageviews:
         if article['article'] not in excluded_keys:
@@ -29,7 +42,7 @@ def refresh(pageviews, data):
 def createJson(data):
     json = []
     for i, (k,v) in enumerate(data.items()):
-        article = {"Article": k, "Views": v, "Rank": i+1}
+        article = {"Article": k.replace("_", " "), "Views": v, "Rank": i+1, "Thumbnail":thumbnail(k)}
         json.append(article)
     return json
 
@@ -39,7 +52,7 @@ with open('aggregated_views.json', 'w') as f:
     year = 2022
     data = {}
     for month in range (1, 11):
-        if month in [1, 3, 5, 7, 8]:
+        if month in [1, 3, 5, 7, 8, 10]:
             for day in range (1, 32):
                 refresh(top_pageviews(project,access,year,str(month).zfill(2),str(day).zfill(2)), data)
         if month in [2]:

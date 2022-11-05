@@ -1,7 +1,7 @@
 const ctx = {
     GLYPH_SIZE: 16,
-    w: 1020,
-    h: 1280,
+    w: 1420,
+    h: 1080,
     graph_h: 700, 
     graph_w: 800,
     timeAxisHeight: 20,
@@ -55,23 +55,37 @@ function initMainView(svgEl){
                         .range([0, 90]);
 
     // Initialize the circle: all located at the center of the svg area
+
     const node = svgEl.append("g")
-        .selectAll("circle")
-        .data(ctx.data)
-        .join("circle")
-        .attr("r", (d=>ctx.radiusScale(d.Views)))
-        .attr("cx", ctx.w / 2)
-        .attr("cy", ctx.h / 2)
-        .style("fill", "#69b3a2")
-        .style("fill-opacity", 0.3)
-        .style("z-index", -1)
-        .attr("stroke", "none")
-        .style("stroke-width", 4)
-        .style("cursor","pointer")
-        .call(d3.drag() // call specific function when circle is dragged
-        .on("start", dragstarted)
-        .on("drag", dragged)
-        .on("end", dragended));
+                      .selectAll("circle")
+                      .data(ctx.data)
+                      .join("circle")
+                      .attr("r", (d=>ctx.radiusScale(d.Views)))
+                      .attr("cx", ctx.w / 2)
+                      .attr("cy", ctx.h / 2)
+                      .style("fill", "grey")
+                      .style("fill-opacity", 0.3)
+                      .style("z-index", -1)
+                      .attr("stroke", "none")
+                      .style("stroke-width", 4)
+                      .style("cursor","pointer")
+                      .call(d3.drag() // call specific function when circle is dragged
+                      .on("start", dragstarted)
+                      .on("drag", dragged)
+                      .on("end", dragended));
+
+    var defs = svgEl.append("defs")
+                    .selectAll(".patterns")
+                    .data(ctx.data)
+                    .enter().append("pattern")
+                    .attr("id", (d=> "article"+d.Rank))
+                    .attr("width", 1)
+                    .attr("height", 1)
+                    .append("svg:image")
+                    .attr("xlink:href", (d=>d.Thumbnail))
+                    .attr("width", (d=>2*ctx.radiusScale(d.Views)))
+                    .attr("height", (d=>2*ctx.radiusScale(d.Views)));
+
 
     // Features of the forces applied to the nodes:
     const simulation = d3.forceSimulation()
@@ -90,6 +104,8 @@ function initMainView(svgEl){
           node
               .attr("cx", d => d.x)
               .attr("cy", d => d.y)
+              .style("fill", (d=> d.Thumbnail? "url(#article"+d.Rank+")": "#000"))
+              .attr("stroke", "grey")
         });
         node
         .on("mouseover", mouseover)
@@ -131,15 +147,16 @@ function initMainView(svgEl){
     .style("opacity", 1);
     d3.select(this)
       .transition()
-      .duration(500)
+      .duration(200)
       .style("stroke", "black")
       .style("opacity", 1)
+      .style("fill-opacity", 1)
     }
     function mousemove(d) {
         Tooltip
-          .html(d.target.__data__.Article+" : "+d.target.__data__.Views)
-          .style("left", (d3.pointer(event,this)[0]) + "px")
-          .style("top", (d3.pointer(event,this)[1]) + "px")
+          .html(d.target.__data__.Article+" : "+d.target.__data__.Views + " views")
+          .style("left", (d3.pointer(event,this)[0]) + 100 + "px")
+          .style("top", (d3.pointer(event,this)[1]) - 100 + "px")
           .style("position", "fixed")
         console.log(d)
     }
@@ -148,9 +165,10 @@ function initMainView(svgEl){
         .style("opacity", 0);
     d3.select(this)
       .transition()		
-      .duration(500)
-      .style("stroke", "none")
+      .duration(200)
+      .style("stroke", "grey")
       .style("opacity", 0.8)
+      .style("fill-opacity", 0.3)
     }
 }
 
