@@ -27,6 +27,7 @@ svg {
     margin-right: auto;
     font-family: sans-serif;
     font-size: 10px;
+    width: 100%;
 }
 
 
@@ -67,7 +68,7 @@ body {
 
 .tooltip {
     font-size: 1rem;
-    text-align: center;
+    text-align: left;
     font-weight: 700;
     font-family: Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace;
   }
@@ -79,9 +80,8 @@ body {
         width: 50%;
 }
 
-
 image {
-  filter: gray; /* IE6-9 */
-  -webkit-filter: grayscale(1); /* Google Chrome, Safari 6+ & Opera 15+ */
-  filter: grayscale(1); /* Microsoft Edge and Firefox 35+ */
+  display: block;
+  position: relative;
+  height: auto;
 }

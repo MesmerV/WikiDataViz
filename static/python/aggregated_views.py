@@ -18,8 +18,8 @@ def top_pageviews(project, access, year, month, day):
     return data['items'][0]['articles']
 
 
-def thumbnail(article):
-    url = "https://en.wikipedia.org/w/api.php?action=query&titles={article}&prop=pageimages&format=json&pithumbsize=500".format(
+def metadata(article):
+    url = "https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&prop=pageimages|pageterms&piprop=thumbnail&pithumbsize=300&titles={article}&pilicense=any".format(
         article=article,
     )
     print(url)
@@ -27,9 +27,9 @@ def thumbnail(article):
     response = requests.get(url, headers=headers)
     data = response.json()
     try: 
-        return list(data['query']['pages'].items())[0][1]['thumbnail']['source']
+        return {"thumbnail": list(data['query']['pages'])[0]['thumbnail']['source'], "description":list(data['query']['pages'])[0]['terms']['description']}
     except:
-        return ""
+        return {"thumbnail": "", "description": ""}
 
 def refresh(pageviews, data):
     for article in pageviews:
@@ -42,7 +42,8 @@ def refresh(pageviews, data):
 def createJson(data):
     json = []
     for i, (k,v) in enumerate(data.items()):
-        article = {"Article": k.replace("_", " "), "Views": v, "Rank": i+1, "Thumbnail":thumbnail(k)}
+        m = metadata(k)
+        article = {"Article": k.replace("_", " "), "Views": v, "Rank": i+1, "Thumbnail":m["thumbnail"], "Description": m["description"]}
         json.append(article)
     return json
 
@@ -61,6 +62,6 @@ with open('aggregated_views.json', 'w') as f:
         if month in [4, 6, 9]:
             for day in range (1, 31):
                 refresh(top_pageviews(project,access,year,str(month).zfill(2),str(day).zfill(2)), data)
-    data = dict(list(dict(sorted(data.items(), key=lambda item: item[1], reverse=True)).items())[:100])
+    data = dict(list(dict(sorted(data.items(), key=lambda item: item[1], reverse=True)).items())[:50])
     data = createJson(data)
     json.dump(data, f)

@@ -104,8 +104,10 @@ function initMainView(svgEl){
           node
               .attr("cx", d => d.x)
               .attr("cy", d => d.y)
-              .style("fill", (d=> d.Thumbnail? "url(#article"+d.Rank+")": "#000"))
+              .style("fill", (d=> d.Thumbnail? "url(#article"+d.Rank+")": "#f5f5f5"))
               .attr("stroke", "grey")
+              .style("background-position","50% 50%")
+              .style('background-repeat','no-repeat')  
         });
         node
         .on("mouseover", mouseover)
@@ -154,7 +156,7 @@ function initMainView(svgEl){
     }
     function mousemove(d) {
         Tooltip
-          .html(d.target.__data__.Article+" : "+d.target.__data__.Views + " views")
+          .html(d.target.__data__.Article+": "+d.target.__data__.Views + " views" + "<br>" + d.target.__data__.Description)
           .style("left", (d3.pointer(event,this)[0]) + 100 + "px")
           .style("top", (d3.pointer(event,this)[1]) - 100 + "px")
           .style("position", "fixed")
