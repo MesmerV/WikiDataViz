@@ -56,6 +56,7 @@ function getTopPages(data){
 }
 
 // DEPRECATED 
+/*
 function initMainView(svgEl, topPages){
     
     //console.log(ctx.data);
@@ -63,7 +64,7 @@ function initMainView(svgEl, topPages){
     
     //set views scale
     ctx.viewsScale = d3.scaleLog()
-                  .domain([10000+ ctx.minViews,ctx.maxViews])
+                  .domain([200+ctx.minViews,ctx.maxViews])
                   .range([1,ctx.graph_h]);
     
                   
@@ -150,6 +151,7 @@ function initMainView(svgEl, topPages){
 
     )
 };
+*/
 
 //better structured TimeSeries with animation flexibility
 
@@ -165,7 +167,7 @@ function AnimatedTimeSeries(svg_TS, topPages){
     
     // init scales
     const yScale = d3.scaleLog()
-    .domain([10000 + ctx.minViews,ctx.maxViews])
+    .domain([200 + ctx.minViews,ctx.maxViews])
     .range([ctx.graph_h - ctx.margin.bottom, ctx.margin.top]);
 
     const timeScale = d3.scaleTime()
@@ -249,7 +251,7 @@ async function createViz(){
 
 
     //Load TS Data and feed it to graphs
-    d3.json("/static/data/top_pageviews.json") // returns a promise : asynchonous
+    d3.json("/static/data/top_15_articles_start_end.json") // returns a promise : asynchonous
         .then(function(rawdata){
             // store data as constant of the page
             ctx.data = rawdata;
@@ -264,9 +266,6 @@ async function createViz(){
             svg_TS.update(timeframe);
 
             timeframe = [new Date("1900-04-01"), new Date("1900-08-01")];
-            
-
-
             
         })
         .catch(function(error){console.log(error)});
