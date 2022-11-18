@@ -7,7 +7,7 @@ const ctx = {
     //timeSeries constants
     graph_h: 700, 
     graph_w: 800,
-    num_graph: 25,
+
     timeAxisHeight: 20,
     maxViews:0,
     minViews:0,
@@ -155,11 +155,10 @@ function initMainView(svgEl, topPages){
 
 //better structured TimeSeries with animation flexibility
 
-function AnimatedTimeSeries(svg_TS, topPages){
+function AnimatedTimeSeries(svg_TS, topPages, dr_duration=3000){
     //creates graph on svg and assign an update method to it
 
-
-    //var svg = d3.select("#main").append("svg")//d3.create("svg")
+    //scale the svg to shape
     svg_TS.attr("width", ctx.graph_w)
         .attr("height", ctx.graph_h)
         .attr("viewBox", [0, 0, ctx.graph_w, ctx.graph_h])
@@ -184,6 +183,8 @@ function AnimatedTimeSeries(svg_TS, topPages){
     .call(d3.axisLeft(scale).ticks(ctx.graph_h / 40))
     .call(g => g.select(".domain").remove())
 
+
+
     //line function
     const line = d3.line()
     .x( d => timeScale(ctx.timeParser(d.date)) )
@@ -193,9 +194,6 @@ function AnimatedTimeSeries(svg_TS, topPages){
     const paths = []
 
     Object.entries(topPages).forEach(function(page,i){
-        
-        //limit the number of graph drawn
-        if(i >= ctx.num_graph)return;
         
         let days = page[1];
         paths.push(
@@ -215,19 +213,56 @@ function AnimatedTimeSeries(svg_TS, topPages){
     const gy = svg_TS.append("g")
         .call(yAxis, yScale);
   
+
+
+
+    //return object assigned with a callback for update
+
     return Object.assign(svg_TS, {
-        // function that animates the graph
+        
         update(domain,duration) {
+            // update the timeframe dynamicly
         const t = svg_TS.transition()
-                .duration(duration)
-                .ease(d3.easeLinear); //make the transition linear
+                .duration(duration);
+                //.ease(d3.easeLinear); //make the transition linear
         timeScale.domain(domain);
         gx.transition(t).call(xAxis, timeScale);
+        
         Object.entries(topPages).forEach(function(page,i){
-            let days = page[1];
-            if(i<ctx.num_graph)paths[i].transition(t).attr("d", line(days));
+            
+            let days = page[1].filter(function(day){
+                return (domain[0] < ctx.timeParser(day.date))&&(domain[1] > ctx.timeParser(day.date))
+            });
+
+            paths[i].attr("stroke-dashoffset", 0)
+                    .attr("stroke-dasharray",0)
+                    .transition(t).attr("d", line(days));
+                    
         })
-      }
+        },
+
+        animate(duration){
+        //animated drawing of graph
+        console.log("redraw graph in " + String(duration)+" ms.");
+
+        const transitionPath = d3
+            .transition()
+            .duration(duration)
+            .ease(d3.easeLinear);
+        
+        Object.entries(topPages).forEach(function(page,i){
+            //get path i
+            let path = paths[i];
+            const pathLength = path.node().getTotalLength();
+            path.attr("stroke-dashoffset", pathLength)
+                .attr("stroke-dasharray", pathLength)
+                .transition(transitionPath)
+                .attr("stroke-dashoffset", 0);
+
+            
+            })
+
+        }
     });
   }
 
@@ -235,16 +270,6 @@ function AnimatedTimeSeries(svg_TS, topPages){
 
 async function createViz(){
     console.log("Using D3 v"+d3.version);
-
-
-    //create svg Elements
-
-    // old viZ
-        //var svgEl = d3.select("#main").append("svg");
-        //svgEl.attr("width", ctx.w);
-        //svgEl.attr("height", ctx.h);
-        //initMainView(svgEl,topPages);
-    
 
     //create and add svgElement to page
     var svg_TS = d3.select("#TimeSeries").append("svg");
@@ -260,17 +285,21 @@ async function createViz(){
             topPages = getTopPages(ctx.data);
 
             //create TS and affect it a timeFrame
-            timeframe = [new Date("1899-08-01"), new Date("1899-12-30")];
-
+            
+            timeframe = [new Date("1900-01-01"), new Date("1900-08-01")];
             AnimatedTimeSeries(svg_TS,topPages)
-            svg_TS.update(timeframe);
-
-            timeframe = [new Date("1900-04-01"), new Date("1900-08-01")];
+            //svg_TS.update(timeframe,0);
+            svg_TS.animate(3000);
+            timeframe = [new Date("1900-04-01"), new Date("1900-06-30")];
+            
             
         })
         .catch(function(error){console.log(error)});
 
-        await new Promise(r => setTimeout(r, 1000));
-        svg_TS.update(timeframe,5000);
+        await new Promise(r => setTimeout(r, 4000));
+        svg_TS.update(timeframe,2000);
+
+        await new Promise(r => setTimeout(r, 3000));
+        svg_TS.animate(3000);
 
 };
