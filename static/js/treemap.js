@@ -158,7 +158,7 @@ function initMainView(svgEl){
         Tooltip
           .html(d.target.__data__.Article+": "+d.target.__data__.Views + " views" + "<br>" + d.target.__data__.Description)
           .style("left", (d3.pointer(event,this)[0]) + 100 + "px")
-          .style("top", (d3.pointer(event,this)[1]) - 100 + "px")
+          .style("top", (d3.pointer(event,this)[1]) - 70 + "px")
           .style("position", "fixed")
         console.log(d)
     }
