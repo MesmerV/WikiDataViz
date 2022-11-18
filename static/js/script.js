@@ -247,7 +247,7 @@ async function createViz(){
     
 
     //create and add svgElement to page
-    var svg_TS = d3.select("#main").append("svg");
+    var svg_TS = d3.select("#TimeSeries").append("svg");
 
 
     //Load TS Data and feed it to graphs

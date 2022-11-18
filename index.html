@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <title>Wikipedia Project</title>
+
         <!-- https://d3js.org/ -->
         <script type="text/javascript" src="/static/js/d3.v7.min.js"></script>
         
@@ -11,9 +12,14 @@
         <link rel="stylesheet" href="/static/css/main.css">
     </head>
 
-    <h1> Wikipedia top pages views visualization</h1>
-    <body onload="createViz();">
-        <div id="main"></div>
+    
+    <body  onload="createViz();">
+        
+        <div id="main">
+            <h1> Wikipedia top pages views visualization</h1>
+            <a href="static/templates/treemap.html">TreeMap</a>
+            <div id="TimeSeries"></div>
+        </div>
     </body>
 
     <footer>
