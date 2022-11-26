@@ -155,7 +155,7 @@ function initMainView(svgEl, topPages){
 
 //better structured TimeSeries with animation flexibility
 
-function AnimatedTimeSeries(svg_TS, topPages, dr_duration=3000){
+function AnimatedTimeSeries(svg_TS, topPages){
     //creates graph on svg and assign an update method to it
 
     //scale the svg to shape
@@ -181,7 +181,7 @@ function AnimatedTimeSeries(svg_TS, topPages, dr_duration=3000){
     //Xlabel
     svg_TS.append("text")
         .attr("class", "x label")
-        .attr("text-anchor", "center")
+        .attr("text-anchor", "middle")
         .attr("x", ctx.graph_w/2)
         .attr("y", ctx.graph_h - 5)
         .attr("font-family", "Saira")
@@ -195,7 +195,7 @@ function AnimatedTimeSeries(svg_TS, topPages, dr_duration=3000){
 
     svg_TS.append("text")
         .attr("class", "y label")
-        .attr("text-anchor", "center")
+        .attr("text-anchor", "middle")
         .attr("y", 0)
         .attr("x", - ctx.graph_h/2)
         .attr("dy", ".75em")
@@ -223,6 +223,9 @@ function AnimatedTimeSeries(svg_TS, topPages, dr_duration=3000){
             .attr("stroke-width", 3)
             .attr("stroke-miterlimit", 2)
             .attr("d", line(days))
+            .on("mouseover", mouseover)
+            .on("mousemove", mousemove)
+            .on("mouseleave", mouseleave)
             );
     })
     
@@ -233,7 +236,49 @@ function AnimatedTimeSeries(svg_TS, topPages, dr_duration=3000){
     const gy = svg_TS.append("g")
         .call(yAxis, yScale);
   
+    
+        
+    //tooltip events // TODO: fix timeSeries size so that the tooltip is displayed in the right position 
+    var Tooltip = d3.select("#TimeSeries")
+        .append("div")
+        .style("opacity", 0)
+        .attr("class", "tooltip")
+        .style("background-color", "white")
+        .style("border", "solid")
+        .style("border-width", "0.5px")
+        .style("border-radius", "5px")
+        .style("border-color", "grey")
+        .style("padding", "5px")
+        .html("Article Name");
 
+
+    function mouseover(d) {
+        Tooltip
+            .style("opacity", 1)
+            .style("position", "fixed")
+         d3.select(this)
+           .transition()
+           .duration(100)
+           .attr("stroke", "black")
+           .style("fill-opacity", 2)
+           .attr("stroke-width", 6)
+         }
+    function mousemove(d) {
+             Tooltip
+             .style("left", (d3.pointer(event,this)[0]) + 700 + "px")
+             .style("top", (d3.pointer(event,this)[1]) + 70 + "px")
+             console.log(d)
+         }
+    function mouseleave(d) {
+         Tooltip
+             .style("opacity", 0);
+         d3.select(this)
+           .transition()		
+           .duration(200)
+           .style("fill-opacity", 0.3)
+           .attr("stroke", "steelblue")
+           .attr("stroke-width", 3)
+          }
 
 
     //return object assigned with a callback for update
@@ -317,9 +362,10 @@ async function createViz(){
         .catch(function(error){console.log(error)});
 
         await new Promise(r => setTimeout(r, 4000));
-        svg_TS.update(timeframe,2000);
+        //svg_TS.update(timeframe,2000);
 
         await new Promise(r => setTimeout(r, 3000));
-        svg_TS.animate(3000);
+        //svg_TS.animate(3000);
 
 };
+
