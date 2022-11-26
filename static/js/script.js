@@ -15,8 +15,8 @@ const ctx = {
     margin: {
         top: 20,
         right: 30,
-        bottom: 30,
-        left: 40
+        bottom: 50,
+        left: 60
         },
     data: [],
     timeParser: d3.timeParse("%m%d"),
@@ -177,12 +177,32 @@ function AnimatedTimeSeries(svg_TS, topPages, dr_duration=3000){
     xAxis = (g, scale = timeScale) => g
     .attr("transform", `translate(0,${ctx.graph_h - ctx.margin.bottom})`)
     .call(d3.axisBottom(scale).ticks(ctx.graph_w / 80).tickSizeOuter(0))
+    
+    //Xlabel
+    svg_TS.append("text")
+        .attr("class", "x label")
+        .attr("text-anchor", "center")
+        .attr("x", ctx.graph_w/2)
+        .attr("y", ctx.graph_h - 5)
+        .attr("font-family", "Saira")
+        .attr("font-size", "2.5em")
+        .text("Date");
 
     yAxis = (g, scale = yScale) => g
-    .attr("transform", `translate(${ctx.margin.left},0)`)
-    .call(d3.axisLeft(scale).ticks(ctx.graph_h / 40))
-    .call(g => g.select(".domain").remove())
+        .attr("transform", `translate(${ctx.margin.left},0)`)
+        .call(d3.axisLeft(scale).ticks(ctx.graph_h / 40))
+        .call(g => g.select(".domain").remove())
 
+    svg_TS.append("text")
+        .attr("class", "y label")
+        .attr("text-anchor", "center")
+        .attr("y", 0)
+        .attr("x", - ctx.graph_h/2)
+        .attr("dy", ".75em")
+        .attr("transform", "rotate(-90)")
+        .attr("font-family", "Saira")
+        .attr("font-size", "2.5em")
+        .text("Page views");
 
 
     //line function
