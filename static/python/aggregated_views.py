@@ -27,9 +27,9 @@ def metadata(article):
     response = requests.get(url, headers=headers)
     data = response.json()
     try: 
-        return {"thumbnail": list(data['query']['pages'])[0]['thumbnail']['source'], "description":list(data['query']['pages'])[0]['terms']['description']}
+        return {"id": list(data['query']['pages'])[0]['pageid'], "thumbnail": list(data['query']['pages'])[0]['thumbnail']['source'], "description":list(data['query']['pages'])[0]['terms']['description']}
     except:
-        return {"thumbnail": "", "description": ""}
+        return {"id": "", "thumbnail": "", "description": ""}
 
 def refresh(pageviews, data):
     for article in pageviews:
@@ -39,12 +39,30 @@ def refresh(pageviews, data):
             else:
                 data[article['article']]+=article['views']
 
-def createJson(data):
+def getNodes(data):
     json = []
     for i, (k,v) in enumerate(data.items()):
         m = metadata(k)
-        article = {"Article": k.replace("_", " "), "Views": v, "Rank": i+1, "Thumbnail":m["thumbnail"], "Description": m["description"]}
+        article = {"id": m["id"], "Article": k.replace("_", " "), "Views": v, "Rank": i+1, "Thumbnail":m["thumbnail"], "Description": m["description"]}
         json.append(article)
+    return json
+
+def getLinks(data):
+    json = []
+    for article in data:
+        title = article['Article'].replace(" ", "%20")
+        url = 'https://en.wikipedia.org/w/api.php?action=query&generator=links&titles={title}&prop=pageprops&ppprop=wikibase_item&gpllimit=500&format=json'.format(
+            title=title
+        )
+        print(url)
+        headers = {'User-Agent': 'CoolBot/0.0 (https://example.org/coolbot/; coolbot@example.org)'}
+        response = requests.get(url, headers=headers)
+        results = response.json()
+        for result in results['query']['pages']:
+            if result != -1 :
+                for subarticle in data:
+                    if subarticle['id'] == int(result):
+                        json.append({'source':article['id'], 'target':subarticle['id']})
     return json
 
 with open('aggregated_views.json', 'w') as f:
@@ -52,7 +70,7 @@ with open('aggregated_views.json', 'w') as f:
     access = 'all-access'
     year = 2022
     data = {}
-    for month in range (1, 11):
+    for month in range (1, 12):
         if month in [1, 3, 5, 7, 8, 10]:
             for day in range (1, 32):
                 refresh(top_pageviews(project,access,year,str(month).zfill(2),str(day).zfill(2)), data)
@@ -62,6 +80,10 @@ with open('aggregated_views.json', 'w') as f:
         if month in [4, 6, 9]:
             for day in range (1, 31):
                 refresh(top_pageviews(project,access,year,str(month).zfill(2),str(day).zfill(2)), data)
-    data = dict(list(dict(sorted(data.items(), key=lambda item: item[1], reverse=True)).items())[:50])
-    data = createJson(data)
-    json.dump(data, f)
+        if month in [11]:
+            for day in range (1, 24):
+                refresh(top_pageviews(project,access,year,str(month).zfill(2),str(day).zfill(2)), data)       
+    data = dict(list(dict(sorted(data.items(), key=lambda item: item[1], reverse=True)).items())[:30])
+    data = getNodes(data)
+    links = getLinks(data)
+    json.dump({"nodes":data, "links": links}, f)

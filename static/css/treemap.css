@@ -32,6 +32,11 @@ svg {
 
 body {
     animation: fadein 2s; 
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
    }
    @keyframes fadein {
     0% {
@@ -40,6 +45,7 @@ body {
     100% {
     opacity:1;
     }
+    
    }
 
 
@@ -80,7 +86,9 @@ body {
 }
 
 image {
+  
   display: block;
   position: relative;
   height: auto;
+  object-position: 50% 50%;
 }
