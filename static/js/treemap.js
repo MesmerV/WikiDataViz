@@ -6,7 +6,8 @@ const ctx = {
     data: [],
     timeParser: d3.timeParse("%m%d"),
     top_pages_count: 20,
-    selected_node: {}
+    selected_nodes: {},
+    nb_selected_nodes:0
 };
 
 
@@ -34,7 +35,6 @@ function initMainView(svgEl){
     typing( scrollProgress );
     })
     .setPin('#pin1')
-    .addIndicators({ name: 'typewriting' })
     .addTo( controller );
 
   // Bubble chart
@@ -46,7 +46,6 @@ function initMainView(svgEl){
     })
     .setClassToggle("#reveal1", "visible") // add class to reveal
     .setPin("#pin2")
-    .addIndicators() // add indicators (requires plugin)
     .addTo(controller);
 
   let nodes = d3.extent(ctx.data.nodes, ((d) => parseFloat(d.Views)));
@@ -246,10 +245,11 @@ function initMainView(svgEl){
     d3.select(this)
       .transition()
       .duration(200)
+      .attr("r", (d)=>(d.Views<30000000 ? ctx.radiusScale(30000000) : ctx.radiusScale(d.Views)))
       .style("opacity", 1)
       .style("fill-opacity", 1);
 
-    if (!ctx.selected_node[d.target.__data__.id]){
+    if (!ctx.selected_nodes[d.target.__data__.id]){
         d3.select(this)
         .style("stroke", "black")
       }
@@ -269,9 +269,10 @@ function initMainView(svgEl){
     d3.select(this)
       .transition()		
       .duration(200)
+      .attr("r", (d)=>(ctx.radiusScale(d.Views)))
       .style("fill-opacity", 0.3);
 
-    if (!ctx.selected_node[d.target.__data__.id]){
+    if (!ctx.selected_nodes[d.target.__data__.id]){
       d3.select(this)
       .style("stroke", "grey")
     }
@@ -281,8 +282,9 @@ function initMainView(svgEl){
   
 
   function selectnode(d) {
-    if (ctx.selected_node[d.target.__data__.id]) {
-      ctx.selected_node[d.target.__data__.id]=false;
+    if (ctx.selected_nodes[d.target.__data__.id]) {
+      ctx.selected_nodes[d.target.__data__.id]=false;
+      ctx.nb_selected_nodes -= 1;
       d3.select(this)
         .transition()		
         .duration(200)
@@ -290,14 +292,14 @@ function initMainView(svgEl){
         .style("stroke-width", 4)
     } 
     else {
-      ctx.selected_node[d.target.__data__.id]=true;
+      ctx.selected_nodes[d.target.__data__.id]=true;
+      ctx.nb_selected_nodes += 1;
       d3.select(this)
         .transition()		
         .duration(200)
         .style("stroke", "#c40000")
         .style("stroke-width", 8)
     }
-    console.log(ctx.selected_node)
   }
 
   function simStep(){
@@ -362,4 +364,25 @@ function toggleSidebar() {
     document.getElementById("mySidebar").style.width = "85px";
     this.mini = true;
  }
+}
+
+function showChart(){
+  $('#mySidebar-right').toggleClass('visible'); 
+  $('#reveal1').toggleClass('chartVisible');
+  if (ctx.nb_selected_nodes==0){
+    $('#advice').text('Please select articles by double clicking on nodes to see the evolution of the number of views over the year.');
+  } else {
+    $('#advice').text('')
+  }
+  
+}
+
+function showMap(){
+  $('#mySidebar-right').toggleClass('visible'); 
+  $('#reveal1').toggleClass("chartVisible");
+  if (ctx.nb_selected_nodes==0){
+    $('#advice').text('Please select articles by double clicking on nodes to see a world map.');
+  } else {
+    $('#advice').text('')
+  }
 }

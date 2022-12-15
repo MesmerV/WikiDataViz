@@ -22,7 +22,7 @@
                     transform: none;
 }
 
-#reveal1.mapVisible {
+#reveal1.chartVisible {
   margin-right: 650px;
 }
 
@@ -94,6 +94,15 @@ body {
     font-family: Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace;
   }
 
+
+#source {
+  font-size: 1rem;
+  text-align: center;
+  font-weight: 700;
+  font-family: Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace;
+}
+
+
 .tooltip {
     font-size: 1rem;
     text-align: left;
@@ -103,13 +112,24 @@ body {
 
 .center {
     display: block;
-        margin-left: auto;
-        margin-right: auto;
-        width: 50%;
+      margin-left: auto;
+      margin-right: auto;
+      width: 50%;
+}
+
+#advice {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  white-space: pre-line;
+  color: #818181;
+  font-size: 1rem;
+  text-align: center;
+  font-weight: 700;
+  font-family: Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace;
 }
 
 image {
-  
   display: block;
   position: relative;
   height: auto;
@@ -192,6 +212,7 @@ image {
 
 .sidebar-right.visible {
   opacity: 1;
+  z-index: 1;
 }
 
 
