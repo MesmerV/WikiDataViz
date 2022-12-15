@@ -10,6 +10,7 @@
             -ms-transition: all 1s ease-in-out;
              -o-transition: all 1s ease-in-out;
                     transition: all 1s ease-in-out;
+    margin-right: 0px;
 
 }
 #reveal1.visible {
@@ -21,12 +22,33 @@
                     transform: none;
 }
 
+#reveal1.mapVisible {
+  margin-right: 650px;
+}
+
+#reveal2 {
+  opacity: 0;
+  -webkit-transition: all 1s ease-in-out;
+       -moz-transition: all 1s ease-in-out;
+          -ms-transition: all 1s ease-in-out;
+           -o-transition: all 1s ease-in-out;
+                  transition: all 1s ease-in-out;
+
+}
+#reveal2.visible {
+  opacity: 1;
+  -webkit-transform: none;
+       -moz-transform: none;
+          -ms-transform: none;
+           -o-transform: none;
+                  transform: none;
+}
+
 svg {
     display: block;
     margin-left: auto;
     margin-right: auto;
     font-family: sans-serif;
-    font-size: 10px;
 }
 
 
@@ -47,6 +69,7 @@ body {
     }
     
    }
+
 
 
 #subtitle {
@@ -91,4 +114,95 @@ image {
   position: relative;
   height: auto;
   object-position: 50% 50%;
+}
+
+
+
+.sidebar {
+  font-size: .5rem;
+  font-weight: 500;
+  font-family: Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace;
+  height: 100%;
+  width: 85px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #252525;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 60px;
+  white-space: nowrap;
+}
+
+
+.sidebar a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+}
+
+.sidebar a:hover {
+  color: #f1f1f1;
+}
+
+
+
+.material-icons,
+.icon-text {
+  vertical-align: middle;
+}
+
+.material-icons {
+  margin-right: 30px
+}
+
+
+
+@media screen and (max-height: 450px) {
+  .sidebar {
+    padding-top: 15px;
+  }
+  .sidebar a {
+    font-size: 18px;
+  }
+}
+
+
+
+.sidebar-right {
+  opacity: 0;
+  font-size: .5rem;
+  font-weight: 500;
+  font-family: Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace;
+  height: 100%;
+  width: 700px;
+  position: fixed;
+  z-index: -10;
+  top: 0;
+  right: 0;
+  background-color: #252525;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 60px;
+  white-space: nowrap;
+}
+
+.sidebar-right.visible {
+  opacity: 1;
+}
+
+
+.sidebar-right a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+}
+
+.sidebar-right a:hover {
+  color: #f1f1f1;
 }

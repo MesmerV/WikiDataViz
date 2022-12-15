@@ -1,15 +1,14 @@
 const ctx = {
     GLYPH_SIZE: 16,
-    w: 1520,
+    w: 1000,
     h: 900,
-    graph_h: 700, 
-    graph_w: 800,
-    timeAxisHeight: 20,
     hmargin: 10,
     data: [],
     timeParser: d3.timeParse("%m%d"),
     top_pages_count: 20,
+    selected_node: {}
 };
+
 
 function initMainView(svgEl){
   var controller = new ScrollMagic.Controller();
@@ -42,7 +41,7 @@ function initMainView(svgEl){
   var bubbleScene = new ScrollMagic.Scene({
       triggerElement: "#trigger2",
       triggerHook: 0.1, // show, when scrolled 10% into view
-      // duration: "80%", // hide 10% before exiting view (80% + 10% from bottom)
+      duration: "60%", // hide 10% before exiting view (80% + 10% from bottom)
       offset: 10 // move trigger to center of element
     })
     .setClassToggle("#reveal1", "visible") // add class to reveal
@@ -119,10 +118,11 @@ function initMainView(svgEl){
   /// Click on circle
   $('circle').on("click", function (e) {
       $('#caption').hide();
+      $("#reveal2").addClass("visible"); // add class to reveal
       simulation
         .nodes(ctx.data.nodes)
         .on("tick", function(d){
-        node
+      node
               .attr("cx", d => d.x)
               .attr("cy", d => d.y)
               .style("fill", (d=> d.Thumbnail? "url(#article"+d.Rank+")": "#f5f5f5"))
@@ -134,6 +134,7 @@ function initMainView(svgEl){
           .attr("cy", function(d) { return d.y = Math.max(d.radius+5, Math.min(ctx.h - d.radius-5, d.y)); });
       });
       node
+      .on("dblclick", selectnode)
       .on("mouseover", mouseover)
       .on("mousemove", mousemove)
       .on("mouseleave", mouseleave);
@@ -143,25 +144,50 @@ function initMainView(svgEl){
 
 
       bubbleScene.duration("150%");
-      linkScene.duration("0")
-               .on('enter leave',  function (e) {
-                  if (e.type == "enter") {
-                    showLink = true; 
-                    simulation.force("link", d3.forceLink()
-                              .id(function(d) { return d.id; })
-                              .distance(.5).strength(.5));
 
-                    simulation.force("link")
-                              .links(ctx.data.links);
-                  } else {
-                    showLink = false;
-                    simulation.force("link", d3.forceLink()
-                              .id(function(d) { return d.id; })
-                              .distance(.5).strength(0));
-                  }
-               })
+      if (ctx.showLinks) {
+        showLink = true; 
+        simulation.force("link", d3.forceLink()
+                  .id(function(d) { return d.id; })
+                  .distance(.5).strength(.5));
 
+        simulation.force("link")
+                  .links(ctx.data.links);
+      } else {
+        showLink = false;
+        simulation.force("link", d3.forceLink()
+                  .id(function(d) { return d.id; })
+                  .distance(.5).strength(0));
+      }
   });
+
+  ctx.showLinks = false;
+
+  $('#toggleLinks').on("click", function (e) {
+    if (ctx.showLinks){
+      ctx.showLinks = false;
+      document.getElementById("toggleLinksText").innerHTML = "show links";
+    } else {
+      ctx.showLinks = true;
+      document.getElementById("toggleLinksText").innerHTML = "hide links";
+    }
+    console.log(e)
+    if (ctx.showLinks) {
+      showLink = true; 
+      simulation.force("link", d3.forceLink()
+                .id(function(d) { return d.id; })
+                .distance(.5).strength(.5));
+
+      simulation.force("link")
+                .links(ctx.data.links);
+    } else {
+      showLink = false;
+      simulation.force("link", d3.forceLink()
+                .id(function(d) { return d.id; })
+                .distance(.5).strength(0));
+    }
+  })
+
 
   /// Drag nodes
   function dragstarted(event, d) {
@@ -220,9 +246,13 @@ function initMainView(svgEl){
     d3.select(this)
       .transition()
       .duration(200)
-      .style("stroke", "black")
       .style("opacity", 1)
       .style("fill-opacity", 1);
+
+    if (!ctx.selected_node[d.target.__data__.id]){
+        d3.select(this)
+        .style("stroke", "black")
+      }
   }
 
   function mousemove(d) {
@@ -239,22 +269,36 @@ function initMainView(svgEl){
     d3.select(this)
       .transition()		
       .duration(200)
-      .style("stroke", "grey")
       .style("fill-opacity", 0.3);
+
+    if (!ctx.selected_node[d.target.__data__.id]){
+      d3.select(this)
+      .style("stroke", "grey")
+    }
     // node.style("fill-opacity", function(o) {
     //     return 0.6;})
   }
   
-  // 
-  var linkScene = new ScrollMagic.Scene({
-    triggerElement: "#trigger3",
-    triggerHook: 0.6,
-    duration: "80%", 
-    offset: -750 // 
-  })
-  .addIndicators() // add indicators (requires plugin)
-  .addTo(controller);
 
+  function selectnode(d) {
+    if (ctx.selected_node[d.target.__data__.id]) {
+      ctx.selected_node[d.target.__data__.id]=false;
+      d3.select(this)
+        .transition()		
+        .duration(200)
+        .style("stroke", "black")
+        .style("stroke-width", 4)
+    } 
+    else {
+      ctx.selected_node[d.target.__data__.id]=true;
+      d3.select(this)
+        .transition()		
+        .duration(200)
+        .style("stroke", "#c40000")
+        .style("stroke-width", 8)
+    }
+    console.log(ctx.selected_node)
+  }
 
   function simStep(){
     // code run at each iteration of the simulation
@@ -265,7 +309,7 @@ function initMainView(svgEl){
                               .attr("x2", (d) => (d.target.x))
                               .attr("y2", (d) => (d.target.y));
     }
-    d3.selectAll("#nodes circle").attr("cx", (d) => (d.x))
+      d3.selectAll("#nodes circle").attr("cx", (d) => (d.x))
                                 .attr("cy", (d) => (d.y));
   }
 
@@ -304,3 +348,18 @@ function createViz(){
     // group for background elements (axes, labels)
     loadData(svgEl);
 };
+
+
+
+//sidebar
+var mini = true;
+
+function toggleSidebar() {
+  if (mini) {
+    document.getElementById("mySidebar").style.width = "300px";
+    this.mini = false;
+} else {
+    document.getElementById("mySidebar").style.width = "85px";
+    this.mini = true;
+ }
+}
