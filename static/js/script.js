@@ -21,6 +21,7 @@ const ctx = {
     data: [],
     timeParser: d3.timeParse("%m%d"),
     top_pages_count: 20,
+
 };
 
 // Temporary way to get data 
@@ -173,6 +174,11 @@ function AnimatedTimeSeries(svg_TS, topPages){
         .domain(d3.extent(Object.keys(ctx.data), (d) => ctx.timeParser(d)))
         .rangeRound([ctx.margin.left,ctx.graph_w - ctx.margin.right]);
 
+    
+
+    const colorScale = d3.scaleOrdinal().domain(Object.keys(ctx.data))
+        .range(d3.schemeSet3);
+
     //init axis 
     xAxis = (g, scale = timeScale) => g
     .attr("transform", `translate(0,${ctx.graph_h - ctx.margin.bottom})`)
@@ -204,6 +210,7 @@ function AnimatedTimeSeries(svg_TS, topPages){
         .attr("font-size", "2.5em")
         .text("Page views");
 
+    console.log(Object.keys(topPages))
 
     //line function
     const line = d3.line()
@@ -219,7 +226,7 @@ function AnimatedTimeSeries(svg_TS, topPages){
         paths.push(
             svg_TS.append("path")
             .attr("fill", "none")
-            .attr("stroke", "steelblue")
+            .attr("stroke",colorScale(name))
             .attr("stroke-width", 3)
             .attr("stroke-miterlimit", 2)
             .attr("d", line(days))
@@ -239,7 +246,7 @@ function AnimatedTimeSeries(svg_TS, topPages){
   
     
         
-    //tooltip events // TODO: fix timeSeries size so that the tooltip is displayed in the right position 
+    //tooltip events
     var Tooltip = d3.select("#TimeSeries")
         .append("div")
         .style("opacity", 0)
@@ -277,7 +284,7 @@ function AnimatedTimeSeries(svg_TS, topPages){
            .transition()		
            .duration(200)
            .style("fill-opacity", 0.3)
-           .attr("stroke", "steelblue")
+           .attr("stroke",colorScale(d.target.id))
            .attr("stroke-width", 3)
           }
 
