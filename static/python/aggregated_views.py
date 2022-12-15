@@ -77,13 +77,13 @@ with open('aggregated_views.json', 'w') as f:
         if month in [2]:
             for day in range (1, 29):
                 refresh(top_pageviews(project,access,year,str(month).zfill(2),str(day).zfill(2)), data)
-        if month in [4, 6, 9]:
+        if month in [4, 6, 9, 11]:
             for day in range (1, 31):
                 refresh(top_pageviews(project,access,year,str(month).zfill(2),str(day).zfill(2)), data)
-        if month in [11]:
-            for day in range (1, 24):
+        if month in [12]:
+            for day in range (1, 15):
                 refresh(top_pageviews(project,access,year,str(month).zfill(2),str(day).zfill(2)), data)       
-    data = dict(list(dict(sorted(data.items(), key=lambda item: item[1], reverse=True)).items())[:30])
+    data = dict(list(dict(sorted(data.items(), key=lambda item: item[1], reverse=True)).items())[:50])
     data = getNodes(data)
     links = getLinks(data)
     json.dump({"nodes":data, "links": links}, f)

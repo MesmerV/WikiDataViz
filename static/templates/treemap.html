@@ -10,11 +10,13 @@
         <script type="text/javascript" src="/static/js/treemap.js"></script>
         <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="/static/css/treemap.css">
-
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     </head>
 
 
-    <body onload="createViz();">
+    <body id="body" class="body" onload="createViz();">
+
+
 
         <div class="spacer s2"></div>
         
@@ -34,15 +36,27 @@
             </div>
         </div>
         
-        <div id="trigger3" class="spacer s0">
-        </div>
         <h3 id="caption" style="position:absolute; transform:translate(-50%, -50%); top:200%; left:50%"></h3>
-        <div id="reveal1">
+        <div id="reveal2">
+            <div id="mySidebar" class="sidebar" onmouseover="toggleSidebar()" onmouseout="toggleSidebar()">
+                <a href="#" onclick="event.preventDefault()" id="toggleLinks"><span><i class="material-icons">commit</i><span class="icon-text" id="toggleLinksText">show links</span></a><br>
+                <a href="#" onclick="event.preventDefault();$('#mySidebar-right').toggleClass('visible'); $('#reveal1').toggleClass('mapVisible')" id="toggleChart"><span><i class="material-icons">ssid_chart</i><span class="icon-text" id="toggleLinksText">chart</span></a><br>
+                <a href="#" onclick="event.preventDefault()" id="toggleChart"><span><i class="material-icons">public</i><span class="icon-text" id="toggleLinksText">map</span></a><br>
+            </div>
+            <div id="mySidebar-right" class="sidebar-right">
+               
+            </div>
         </div>
-        
 
 
-        <div class="spacer s2"></div>
+
+    
+
     </body>
+
+
+
+
+
 
 </html>
