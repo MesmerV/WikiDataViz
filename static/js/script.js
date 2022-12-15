@@ -214,7 +214,7 @@ function AnimatedTimeSeries(svg_TS, topPages){
     const paths = []
 
     Object.entries(topPages).forEach(function(page,i){
-        
+        let name = page[0];
         let days = page[1];
         paths.push(
             svg_TS.append("path")
@@ -223,6 +223,7 @@ function AnimatedTimeSeries(svg_TS, topPages){
             .attr("stroke-width", 3)
             .attr("stroke-miterlimit", 2)
             .attr("d", line(days))
+            .attr("id",name)
             .on("mouseover", mouseover)
             .on("mousemove", mousemove)
             .on("mouseleave", mouseleave)
@@ -255,19 +256,19 @@ function AnimatedTimeSeries(svg_TS, topPages){
     function mouseover(d) {
         Tooltip
             .style("opacity", 1)
-            .style("position", "fixed")
+            .style("position", "fixed");
          d3.select(this)
            .transition()
            .duration(100)
            .attr("stroke", "black")
            .style("fill-opacity", 2)
-           .attr("stroke-width", 6)
+           .attr("stroke-width", 6);
          }
     function mousemove(d) {
              Tooltip
-             .style("left", (d3.pointer(event,this)[0]) + 700 + "px")
+             .html(d.target.id)
+             .style("left", (d3.pointer(event,this)[0]) + 100 + "px")
              .style("top", (d3.pointer(event,this)[1]) + 70 + "px")
-             console.log(d)
          }
     function mouseleave(d) {
          Tooltip
@@ -335,6 +336,13 @@ function AnimatedTimeSeries(svg_TS, topPages){
 
 async function createViz(){
     console.log("Using D3 v"+d3.version);
+
+    var div_TS = d3.select("#main")
+                    .append("div")
+                    .attr("id","TimeSeries")
+                    .attr("width",ctx.graph_w+'px')
+                    .attr("height",ctx.graph_h)
+                    .style("display",'inline-block')
 
     //create and add svgElement to page
     var svg_TS = d3.select("#TimeSeries").append("svg");
