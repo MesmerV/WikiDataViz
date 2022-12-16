@@ -17,9 +17,8 @@ def top_pageviews(project, access, year, month, day):
     data = response.json()
     return data['items'][0]['articles']
 
-
 def metadata(article):
-    url = "https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&prop=pageimages|pageterms&piprop=thumbnail&pithumbsize=300&titles={article}&pilicense=any".format(
+    url = "https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&prop=pageimages|pageterms&piprop=thumbnail&pithumbsize=100&titles={article}&pilicense=any".format(
         article=article,
     )
     print(url)
@@ -31,19 +30,12 @@ def metadata(article):
     except:
         return {"id": "", "thumbnail": "", "description": ""}
 
-def refresh(pageviews, data):
-    for article in pageviews:
-        if article['article'] not in excluded_keys:
-            if article['article'] not in data:
-                data[article['article']]=article['views']
-            else:
-                data[article['article']]+=article['views']
-
 def getNodes(data):
     json = []
-    for i, (k,v) in enumerate(data.items()):
-        m = metadata(k)
-        article = {"id": m["id"], "Article": k.replace("_", " "), "Views": v, "Rank": i+1, "Thumbnail":m["thumbnail"], "Description": m["description"]}
+    for datum in data:
+        print(datum)
+        m = metadata(datum['article'])
+        article = {"id": m["id"], "Article": datum['article'].replace("_", " "), "Views": datum['views'], "Rank": datum['rank'], "Thumbnail":m["thumbnail"], "Description": m["description"]}
         json.append(article)
     return json
 
@@ -65,7 +57,7 @@ def getLinks(data):
                         json.append({'source':article['id'], 'target':subarticle['id']})
     return json
 
-with open('aggregated_views.json', 'w') as f:
+with open('top10.json', 'w') as f:
     project = 'en.wikipedia.org'
     access = 'all-access'
     year = 2022
@@ -73,17 +65,14 @@ with open('aggregated_views.json', 'w') as f:
     for month in range (1, 13):
         if month in [1, 3, 5, 7, 8, 10]:
             for day in range (1, 32):
-                refresh(top_pageviews(project,access,year,str(month).zfill(2),str(day).zfill(2)), data)
+                data["{:02d}".format(day)+"{:02d}".format(month)] = getNodes(top_pageviews(project,access,year,str(month).zfill(2),str(day).zfill(2))[:12])
         if month in [2]:
             for day in range (1, 29):
-                refresh(top_pageviews(project,access,year,str(month).zfill(2),str(day).zfill(2)), data)
+                data["{:02d}".format(day)+"{:02d}".format(month)] = getNodes(top_pageviews(project,access,year,str(month).zfill(2),str(day).zfill(2))[:12])
         if month in [4, 6, 9, 11]:
             for day in range (1, 31):
-                refresh(top_pageviews(project,access,year,str(month).zfill(2),str(day).zfill(2)), data)
+                data["{:02d}".format(day)+"{:02d}".format(month)] = getNodes(top_pageviews(project,access,year,str(month).zfill(2),str(day).zfill(2))[:12])
         if month in [12]:
             for day in range (1, 15):
-                refresh(top_pageviews(project,access,year,str(month).zfill(2),str(day).zfill(2)), data)       
-    data = dict(list(dict(sorted(data.items(), key=lambda item: item[1], reverse=True)).items())[:50])
-    data = getNodes(data)
-    links = getLinks(data)
-    json.dump({"nodes":data, "links": links}, f)
+                data["{:02d}".format(day)+"{:02d}".format(month)] = getNodes(top_pageviews(project,access,year,str(month).zfill(2),str(day).zfill(2))[:12])
+    json.dump(data, f)

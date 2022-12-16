@@ -33,5 +33,5 @@ with open('list_views.json', 'w') as f:
         results = top_pageviews(project,access,agent, article["Article"].replace(" ", "%20"), "daily", start, end)
         data[article['id']] = []
         for result in results:
-            data[article['id']].append({"date": result['timestamp'], "views": result['views']})
+            data[article['id']].append({"date": result['timestamp'][:-2], "views": result['views'], 'title': result['article']})
     json.dump(data, f)

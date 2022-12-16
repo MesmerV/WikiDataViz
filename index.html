@@ -8,12 +8,14 @@
         <script src="//cdnjs.cloudflare.com/ajax/libs/ScrollMagic/2.0.7/ScrollMagic.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/ScrollMagic/2.0.7/plugins/debug.addIndicators.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/d3-simple-slider"></script>
         <link rel="stylesheet" href="/static/css/treemap.css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-        
+
         <!-- Local Scripts-->
         <script type="text/javascript" src="/static/js/treemap.js"></script>
         <script type="text/javascript" src="/static/js/TimeSeries.js"></script>
+        <script type="text/javascript" src="/static/js/top10.js"></script>
     </head>
 
 
@@ -43,17 +45,29 @@
         <div id="reveal2">
             <div id="mySidebar" class="sidebar" onmouseover="toggleSidebar()" onmouseout="toggleSidebar()">
                 <a href="#" onclick="event.preventDefault()" id="toggleLinks"><span><i class="material-icons">commit</i><span class="icon-text" id="toggleLinksText">show links</span></a><br>
-                <a href="#" onclick="event.preventDefault();
-                                    $('#mySidebar-right').toggleClass('visible');
-                                    $('#reveal1').toggleClass('mapVisible');
-                                    ctxTS.svg_TS.animate(3000);"
-                            id="toggleChart">
-                    <span><i class="material-icons">ssid_chart</i><span class="icon-text" id="toggleLinksText">chart</span></a><br>
-                <a href="#" onclick="event.preventDefault()" id="toggleChart"><span><i class="material-icons">public</i><span class="icon-text" id="toggleLinksText">map</span></a><br>
+                <a href="#" onclick="event.preventDefault();showChart();ctxTS.svg_TS.animate(3000);" id="toggleChart"><span><i class="material-icons">ssid_chart</i><span class="icon-text" id="toggleChartText">show chart</span></a><br>
+                <a href="#" onclick="event.preventDefault();showMap();createTop10()" id="toggleChart"><span><i class="material-icons">calendar_month</i><span class="icon-text" id="toggleMapText">daily top 10</span></a><br>
             </div>
             
             <div id="mySidebar-right" class="sidebar-right">
-               
+                <button id="animate-button" class="play-button">Play</button>
+                <div id="advice" class="advice" style="position:absolute; transform:translate(-50%, -50%); top:50%; left:50%"> 
+                </div>
+            </div>
+
+            <div id="mySidebar-map" class="sidebar-right">
+                <div id="slider">
+                    <p id="value-time"></p>
+                    <div id="slider-time"></div>
+                    <button id="play-button" class="play-button" >Play</button>
+                </div>
+                <div id="top10chart"></div>
+                <div id="dailyCount"></div>
+            </div>
+
+
+            <div id="source" style="position:fixed;bottom:2%;right:2%">
+                Data retrieved on December 15, 2022 (Wikipedia API)
             </div>
         </div>
 

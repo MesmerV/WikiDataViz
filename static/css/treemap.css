@@ -22,7 +22,7 @@
                     transform: none;
 }
 
-#reveal1.mapVisible {
+#reveal1.chartVisible {
   margin-right: 650px;
 }
 
@@ -48,7 +48,7 @@ svg {
     display: block;
     margin-left: auto;
     margin-right: auto;
-    font-family: sans-serif;
+    font-family: Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace;
 }
 
 
@@ -94,6 +94,15 @@ body {
     font-family: Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace;
   }
 
+
+#source {
+  font-size: 1rem;
+  text-align: center;
+  font-weight: 700;
+  font-family: Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace;
+}
+
+
 .tooltip {
     font-size: 1rem;
     text-align: left;
@@ -103,13 +112,24 @@ body {
 
 .center {
     display: block;
-        margin-left: auto;
-        margin-right: auto;
-        width: 50%;
+      margin-left: auto;
+      margin-right: auto;
+      width: 50%;
+}
+
+.advice {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  white-space: pre-line;
+  color: #818181;
+  font-size: 1rem;
+  text-align: center;
+  font-weight: 700;
+  font-family: Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace;
 }
 
 image {
-  
   display: block;
   position: relative;
   height: auto;
@@ -120,7 +140,6 @@ image {
 
 .sidebar {
   font-size: .5rem;
-  font-weight: 500;
   font-family: Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace;
   height: 100%;
   width: 85px;
@@ -175,7 +194,6 @@ image {
 .sidebar-right {
   opacity: 0;
   font-size: .5rem;
-  font-weight: 500;
   font-family: Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace;
   height: 100%;
   width: 700px;
@@ -192,6 +210,7 @@ image {
 
 .sidebar-right.visible {
   opacity: 1;
+  z-index: 1;
 }
 
 
@@ -205,4 +224,64 @@ image {
 
 .sidebar-right a:hover {
   color: #f1f1f1;
+}
+
+.slider text {
+  font-size: 12px;
+}
+
+.slider {
+  cursor: pointer;
+}
+
+.parameter-value path {
+  fill: #a6dcd4;
+}
+
+
+.play-button {
+  background: #f08080;
+  padding-right: 26px;
+  border-radius: 3px;
+  border: none;
+  color: white;
+  margin: 0;
+  position: absolute;
+  top:20%;
+  left: 45% ;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+  padding: 0 12px;
+  width: 10%;
+  cursor: pointer;
+  height: 30px;
+  color:white;
+  font-size: 1rem;
+  text-align: center;
+  font-weight: 700;
+  font-family: Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace;
+}
+
+#play-button:hover {
+  background-color: #696969;
+}
+
+
+.track-overlay {
+  opacity:0
+}
+
+#value-time{
+  color:white;
+  font-size: 1rem;
+  text-align: center;
+  font-weight: 700;
+  font-family: Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace;
+}
+
+#slider-time{
+  color:white;
+  font-size: .75rem;
+  text-align: center;
+  font-family: Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace;
 }

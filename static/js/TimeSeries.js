@@ -6,7 +6,6 @@ const ctxTS = {
     graph_w: 700,
     timeAxisHeight: 20,
     maxViews:0,
-    minViews:0,
     hmargin: 10,
     margin: {
         top: 20,
@@ -44,10 +43,8 @@ function getTopPages(data){
         topPages[id].id = id;
         topPages[id].name = name;
         
-        max_views = Math.max.apply(Math, ls.map(function(o) { return o.views; }))
-        min_views = Math.min.apply(Math, ls.map(function(o) { return o.views; }))
+        max_views = Math.max.apply(Math, ls.map(function(o) { return o.views; }));
         if(max_views > ctxTS.maxViews)ctxTS.maxViews = max_views;
-        if(min_views < ctxTS.minViews)ctxTS.minViews = min_views;
 
     })
     
@@ -165,10 +162,13 @@ function AnimatedTimeSeries(svg_TS, topPages){
         .append("div")
         .style("opacity", 0)
         .attr("class", "tooltip")
+        .style("position", 'absolute')
+        .style("top", '5%')
+        .style("right", '10px')
         .style("background-color", "white")
         .style("border", "solid")
         .style("border-width", "0.5px")
-        .style("border-radius", "5px")
+        .style("border-radius", "3px")
         .style("border-color", "grey")
         .style("padding", "5px")
         .html("Article Name");
@@ -177,20 +177,16 @@ function AnimatedTimeSeries(svg_TS, topPages){
     function mouseoverTS(d) {
         TooltipTS
             .style("opacity", 1)
-            .style("position", "fixed");
+            .style("position", "fixed")
+            .html(d.target.id);
          d3.select(this)
            .transition()
            .duration(100)
-           .attr("stroke", "black")
+           .attr("stroke", "white")
            .style("fill-opacity", 2)
-           .attr("stroke-width", 6);
+           .attr("stroke-width", 7);
          }
-    function mousemoveTS(d) {
-             TooltipTS
-             .html(d.target.id)
-             .style("left", (d3.pointer(event,this)[0]) + 100 + "px")
-             .style("top", (d3.pointer(event,this)[1]) + 70 + "px")
-         }
+
     function mouseleaveTS(d) {
          TooltipTS
              .style("opacity", 0);
@@ -215,7 +211,6 @@ function AnimatedTimeSeries(svg_TS, topPages){
     Object.entries(topPages).forEach(function(page,i){
         let name = page[1].name;
         let days = page[1].path;
-        console.log(days)
         paths.push(
             svg_TS.append("path")
             .attr("fill", "none")
@@ -225,7 +220,7 @@ function AnimatedTimeSeries(svg_TS, topPages){
             .attr("d", line(days))
             .attr("id",name)
             .on("mouseover", mouseoverTS)
-            .on("mousemove", mousemoveTS)
+            //.on("mousemove", mousemoveTS)
             .on("mouseleave", mouseleaveTS)
             );
     })
@@ -239,17 +234,17 @@ function AnimatedTimeSeries(svg_TS, topPages){
 
             Object.entries(topPages).forEach(function(page,i){
                 
-                if(ctx.selected_node.hasOwnProperty(page[1].id)){
-                    if(ctx.selected_node[page[1].id]){
-                        paths[i].transition(duration).style("opacity", 1);
+                if(ctx.selected_nodes.hasOwnProperty(page[1].id)){
+                    if(ctx.selected_nodes[page[1].id]){
+                        paths[i].transition(duration).style("visibility", "visible");
                     }
                     else {
-                        paths[i].transition(duration).style("opacity", 0);
+                        paths[i].transition(duration).style("visibility", "hidden");
                     }
 
                 }
                 else{
-                    paths[i].transition(duration).style("opacity", 0);
+                    paths[i].transition(duration).style("visibility", "hidden");
                 }
                         
             })
@@ -314,6 +309,16 @@ function AnimatedTimeSeries(svg_TS, topPages){
 async function createTS(){
     console.log("Loading TS...");
 
+    // advice and button
+    var AnimateButton = d3.select("#animate-button");
+
+    
+    AnimateButton
+        .style("top", '5%')
+        .style("right", '30%')
+        .on("click", function () {
+        ctxTS.svg_TS.animate(3000);
+    });
 
     var div_TS = d3.select("#mySidebar-right")
                     .append("div")
@@ -336,11 +341,11 @@ async function createTS(){
             topPages = getTopPages(ctxTS.data);
 
             //create TS and affect it a timeFrame
-            
             timeframe = [new Date("2022-01-01"), new Date("2022-12-28")];
             AnimatedTimeSeries(svg_TS,topPages)
             svg_TS.updateDomain(timeframe,0);
-            svg_TS.animate(3000);
+            svg_TS.update(0);
+            
             timeframe = [new Date("2022-04-01"), new Date("2022-06-30")];
             
             
