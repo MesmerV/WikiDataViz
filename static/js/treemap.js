@@ -366,7 +366,16 @@ function toggleSidebar() {
  }
 }
 
+ctx.showCharts = false;
+
 function showChart(){
+  if (ctx.showCharts){
+    ctx.showCharts = false;
+    document.getElementById("toggleChartText").innerHTML = "show chart";
+  } else {
+    ctx.showCharts = true;
+    document.getElementById("toggleChartText").innerHTML = "hide chart";
+  }
   $('#mySidebar-right').toggleClass('visible'); 
   $('#reveal1').toggleClass('chartVisible');
   if (ctx.nb_selected_nodes==0){
@@ -377,12 +386,16 @@ function showChart(){
   
 }
 
+ctx.showMap = false;
+
 function showMap(){
-  $('#mySidebar-right').toggleClass('visible'); 
-  $('#reveal1').toggleClass("chartVisible");
-  if (ctx.nb_selected_nodes==0){
-    $('#advice').text('Please select articles by double clicking on nodes to see a world map.');
+  if (ctx.showMap){
+    ctx.showMap = false;
+    document.getElementById("toggleMapText").innerHTML = "daily top 10";
   } else {
-    $('#advice').text('')
+    ctx.showMap = true;
+    document.getElementById("toggleMapText").innerHTML = "hide";
   }
+  $('#mySidebar-map').toggleClass('visible'); 
+  $('#reveal1').toggleClass("chartVisible");
 }
