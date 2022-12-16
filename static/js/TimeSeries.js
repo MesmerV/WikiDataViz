@@ -15,8 +15,9 @@ const ctxTS = {
         left: 70
         },
     data: [],
-    timeParser: d3.timeParse("%m%d"),
+    timeParser: d3.timeParse("%Y%m%d"),
     top_pages_count: 20,
+    svg_TS: null,
 
 };
 
@@ -26,6 +27,37 @@ const ctxTS = {
 // TODO remove max_pages from page construction and make it draw page wi give (lot cleaner...) 
 
 function getTopPages(data){
+
+    //topPages element that we can feed into the time Series
+    var topPages = {};
+    
+    //transform data
+    Object.entries(data).forEach(function(art,i){
+        var id = art[0];
+        var ls = art[1];
+        var name = ls[0].title;
+
+        if (!topPages.hasOwnProperty(id)){
+            topPages[id] = {};
+        }
+        topPages[id].path = ls;
+        topPages[id].id = id;
+        topPages[id].name = name;
+        
+        max_views = Math.max.apply(Math, ls.map(function(o) { return o.views; }))
+        min_views = Math.min.apply(Math, ls.map(function(o) { return o.views; }))
+        if(max_views > ctxTS.maxViews)ctxTS.maxViews = max_views;
+        if(min_views < ctxTS.minViews)ctxTS.minViews = min_views;
+
+    })
+    
+    console.log(topPages);
+    return topPages
+    
+}
+
+//reads top15_articles ... json
+function getTopPagesOld(data){
 
     //topPages element that we can feed into the time Series
     var topPages = {};
@@ -53,7 +85,6 @@ function getTopPages(data){
 }
 
 //TimeSeries with animation flexibility
-
 function AnimatedTimeSeries(svg_TS, topPages){
     //creates graph on svg and assign an update method to it
 
@@ -65,7 +96,7 @@ function AnimatedTimeSeries(svg_TS, topPages){
     
     // init scales
     const yScale = d3.scaleLog()
-    .domain([200 + ctxTS.minViews,ctxTS.maxViews])
+    .domain([1,ctxTS.maxViews])
     .range([ctxTS.graph_h - ctxTS.margin.bottom, ctxTS.margin.top]);
 
     const timeScale = d3.scaleTime()
@@ -182,8 +213,9 @@ function AnimatedTimeSeries(svg_TS, topPages){
     const paths = []
 
     Object.entries(topPages).forEach(function(page,i){
-        let name = page[0];
-        let days = page[1];
+        let name = page[1].name;
+        let days = page[1].path;
+        console.log(days)
         paths.push(
             svg_TS.append("path")
             .attr("fill", "none")
@@ -203,7 +235,31 @@ function AnimatedTimeSeries(svg_TS, topPages){
 
     return Object.assign(svg_TS, {
         
-        update(domain,duration) {
+        update(duration=2000){
+
+            Object.entries(topPages).forEach(function(page,i){
+                
+                if(ctx.selected_node.hasOwnProperty(page[1].id)){
+                    if(ctx.selected_node[page[1].id]){
+                        paths[i].transition(duration).style("opacity", 1);
+                    }
+                    else {
+                        paths[i].transition(duration).style("opacity", 0);
+                    }
+
+                }
+                else{
+                    paths[i].transition(duration).style("opacity", 0);
+                }
+                        
+            })
+        },
+        
+        updateDomain(domain,duration) {
+
+            // kill any other transitions
+            svg_TS.transition(); 
+
             // update the timeframe dynamicly
         const t = svg_TS.transition()
                 .duration(duration);
@@ -215,7 +271,7 @@ function AnimatedTimeSeries(svg_TS, topPages){
         
         Object.entries(topPages).forEach(function(page,i){
             
-            let days = page[1].filter(function(day){
+            let days = page[1].path.filter(function(day){
                 return (domain[0] < ctxTS.timeParser(day.date))&&(domain[1] > ctxTS.timeParser(day.date))
             });
 
@@ -227,6 +283,8 @@ function AnimatedTimeSeries(svg_TS, topPages){
         },
 
         animate(duration){
+
+        svg_TS.transition(); 
         //animated drawing of graph
         console.log("redraw graph in " + String(duration)+" ms.");
 
@@ -254,8 +312,7 @@ function AnimatedTimeSeries(svg_TS, topPages){
 
 
 async function createTS(){
-    console.log("Using D3 v"+d3.version);
-    console.log("TS loaded");
+    console.log("Loading TS...");
 
 
     var div_TS = d3.select("#mySidebar-right")
@@ -267,10 +324,10 @@ async function createTS(){
 
     //create and add svgElement to page
     var svg_TS = d3.select("#TimeSeries").append("svg").attr("id","svgTS");
-
+    ctxTS.svg_TS = svg_TS;
 
     //Load TS Data and feed it to graphs
-    d3.json("/static/data/top_15_articles_start_end.json") // returns a promise : asynchonous
+    d3.json("/static/data/list_views.json") // returns a promise : asynchonous
         .then(function(rawdata){
             // store data as constant of the page
             ctxTS.data = rawdata;
@@ -280,21 +337,21 @@ async function createTS(){
 
             //create TS and affect it a timeFrame
             
-            timeframe = [new Date("1900-01-01"), new Date("1900-08-01")];
+            timeframe = [new Date("2022-01-01"), new Date("2022-12-28")];
             AnimatedTimeSeries(svg_TS,topPages)
-            //svg_TS.update(timeframe,0);
+            svg_TS.updateDomain(timeframe,0);
             svg_TS.animate(3000);
-            timeframe = [new Date("1900-04-01"), new Date("1900-06-30")];
+            timeframe = [new Date("2022-04-01"), new Date("2022-06-30")];
             
             
         })
         .catch(function(error){console.log(error)});
 
-        await new Promise(r => setTimeout(r, 5000));
-        svg_TS.update(timeframe,2000);
-
-        await new Promise(r => setTimeout(r, 3000));
-        svg_TS.animate(3000);
+        //await new Promise(r => setTimeout(r, 5000));
+        //svg_TS.update(timeframe,2000);
+//
+        //await new Promise(r => setTimeout(r, 3000));
+        //svg_TS.animate(3000);
 
 };
 

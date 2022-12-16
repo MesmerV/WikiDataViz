@@ -297,7 +297,9 @@ function initMainView(svgEl){
         .style("stroke", "#c40000")
         .style("stroke-width", 8)
     }
-    console.log(ctx.selected_node)
+    //update TS
+    ctxTS.svg_TS.update();
+    console.log(ctx.selected_node);
   }
 
   function simStep(){
