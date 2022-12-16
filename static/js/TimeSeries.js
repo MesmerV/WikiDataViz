@@ -119,8 +119,7 @@ function AnimatedTimeSeries(svg_TS, topPages){
         .attr("text-anchor", "middle")
         .attr("x", ctxTS.graph_w/2)
         .attr("y", ctxTS.graph_h - 5)
-        .attr("font-family", "Saira")
-        .attr("font-size", "2.5em")
+        .attr("font-size", "3em")
         .attr("fill", "white")
         .text("Date");
         
@@ -129,6 +128,7 @@ function AnimatedTimeSeries(svg_TS, topPages){
     .call(d3.axisLeft(scale).ticks(ctxTS.graph_h / 40))
     .call(g => g.select(".domain").remove())
 
+    
     svg_TS.append("text")
         .attr("class", "y label")
         .attr("text-anchor", "middle")
@@ -136,8 +136,7 @@ function AnimatedTimeSeries(svg_TS, topPages){
         .attr("x", - ctxTS.graph_h/2)
         .attr("dy", ".75em")
         .attr("transform", "rotate(-90)")
-        .attr("font-family", "Saira")
-        .attr("font-size", "2.5em")
+        .attr("font-size", "3em")
         .attr("fill", "white")
         .text("Page views");
         
@@ -161,24 +160,24 @@ function AnimatedTimeSeries(svg_TS, topPages){
     var TooltipTS = d3.select("#TimeSeries")
         .append("div")
         .style("opacity", 0)
-        .attr("class", "tooltip")
         .style("position", 'absolute')
-        .style("top", '5%')
-        .style("right", '10px')
-        .style("background-color", "white")
+        .style("transform","translate(50%, 50%)")
+        .style("top", '75%')
+        .style("right", '50%')
         .style("border", "solid")
         .style("border-width", "0.5px")
         .style("border-radius", "3px")
         .style("border-color", "grey")
-        .style("padding", "5px")
+        .style("font-size", "2.5em")
+        .style("color", "white")
+        .style("padding", "10px")
         .html("Article Name");
 
 
     function mouseoverTS(d) {
         TooltipTS
             .style("opacity", 1)
-            .style("position", "fixed")
-            .html(d.target.id);
+            .html((d.target.id).replace('_',' '));
          d3.select(this)
            .transition()
            .duration(100)
@@ -220,7 +219,6 @@ function AnimatedTimeSeries(svg_TS, topPages){
             .attr("d", line(days))
             .attr("id",name)
             .on("mouseover", mouseoverTS)
-            //.on("mousemove", mousemoveTS)
             .on("mouseleave", mouseleaveTS)
             );
     })
@@ -241,7 +239,6 @@ function AnimatedTimeSeries(svg_TS, topPages){
                     else {
                         paths[i].transition(duration).style("visibility", "hidden");
                     }
-
                 }
                 else{
                     paths[i].transition(duration).style("visibility", "hidden");

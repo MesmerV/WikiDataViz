@@ -285,6 +285,9 @@ function initMainView(svgEl){
     if (ctx.selected_nodes[d.target.__data__.id]) {
       ctx.selected_nodes[d.target.__data__.id]=false;
       ctx.nb_selected_nodes -= 1;
+      // remove advice
+      d3.select("#advice").transition(1000).style("visibility", "hidden")
+      
       d3.select(this)
         .transition()		
         .duration(200)
@@ -300,6 +303,7 @@ function initMainView(svgEl){
         .style("stroke", "#c40000")
         .style("stroke-width", 8)
     }
+    if(ctx.nb_selected_nodes == 0)d3.select("#advice").transition(1000).style("visibility", "visible");
     //update TS
     ctxTS.svg_TS.update();
     ctxTS.svg_TS.animate(2000);
